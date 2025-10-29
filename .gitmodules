@@ -1,0 +1,6 @@
+[submodule "gerenciador-eventos-FrontEnd"]
+	path = gerenciador-eventos-FrontEnd
+	url = https://github.com/capelao-org/gerenciador-eventos-FrontEnd
+[submodule "gerenciador-eventos-BackEnd"]
+	path = gerenciador-eventos-BackEnd
+	url = https://github.com/capelao-org/gerenciador-eventos-BackEnd
