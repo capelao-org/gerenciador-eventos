@@ -25,7 +25,7 @@ O sistema permite:
 # 🏗 2. Arquitetura do Sistema
 
 <p align="center">
-  <img src="./assets/tecnologias.png" width="500">
+  <img src="./assets/tecnologias.png" width="400">
 </p>
 
 ## Modelo Arquitetural
