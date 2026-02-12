@@ -24,11 +24,9 @@ O sistema permite:
 
 # 🏗 2. Arquitetura do Sistema
 
-```text
-📦 gerenciador-eventos
- ┣ 📂 gerenciador-eventos-BackEnd
- ┗ 📂 gerenciador-eventos-FrontEnd
-```
+<p align="center">
+  <img src="./assets/tecnologias.png" width="500">
+</p>
 
 ## Modelo Arquitetural
 
