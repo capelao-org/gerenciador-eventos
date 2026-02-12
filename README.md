@@ -2,6 +2,7 @@
 
 ![Node](https://img.shields.io/badge/Node.js-18+-green)
 ![MySQL](https://img.shields.io/badge/MySQL-Database-blue)
+![AWS S3](https://img.shields.io/badge/AWS-S3-orange)
 ![Status](https://img.shields.io/badge/Status-Acadêmico-orange)
 ![Curso](https://img.shields.io/badge/Curso-ADS-00599C)
 
@@ -9,15 +10,15 @@
 
 # 📌 1. Visão Geral do Projeto
 
-O **Sistema de Gerenciamento de Eventos** é uma aplicação Web Full Stack desenvolvida com arquitetura Cliente-Servidor utilizando API REST, banco de dados relacional e autenticação baseada em JWT.
+O **Sistema de Gerenciamento de Eventos** é uma aplicação Web Full Stack desenvolvida com arquitetura Cliente-Servidor utilizando API REST, autenticação JWT, upload de arquivos e integração com Amazon S3.
 
 O sistema permite:
 
 - Cadastro e autenticação de usuários
-- Gerenciamento de eventos
+- Gerenciamento completo de eventos (CRUD)
 - Upload de arquivos
-- Controle de acesso via token
-- Persistência de dados em banco relacional
+- Controle de acesso via JWT
+- Persistência em banco de dados MySQL
 
 ---
 
@@ -34,9 +35,9 @@ O sistema permite:
 - Arquitetura Cliente-Servidor
 - API REST
 - Padrão MVC
-- Autenticação JWT
-- Upload de arquivos
+- Autenticação baseada em JWT
 - Integração com Amazon S3
+- Separação de responsabilidades
 
 ---
 
@@ -46,11 +47,9 @@ Responsável por:
 
 - Regras de negócio
 - Autenticação e autorização
-- Upload e armazenamento de arquivos
+- Upload de arquivos
+- Integração com AWS S3
 - Persistência de dados
-- Comunicação com banco MySQL
-
----
 
 ## 📂 Estrutura
 
@@ -59,114 +58,54 @@ BackEnd
  ┣ 📂 models
  ┣ 📂 controllers
  ┣ 📂 routes
- ┣ 📂 config
  ┣ 📂 middlewares
+ ┣ 📂 config
  ┣ 📄 index.js
  ┗ 📄 .env
 ```
 
 ---
 
-# 🛠 4. Tecnologias e Dependências Utilizadas
+# 🛠 4. Dependências Utilizadas
 
-## 🔹 Principais Dependências
+## Principais Bibliotecas
 
-### express
-Framework principal para criação da API REST em Node.js.  
-Responsável por gerenciar rotas, requisições e respostas HTTP.
+### Express
+Framework principal para criação da API REST.
 
----
+### Sequelize
+ORM para manipulação do banco de dados MySQL.
 
-### sequelize
-ORM (Object Relational Mapping) utilizado para:
+### Mysql2
+Driver para conexão com MySQL.
 
-- Criar models
-- Executar consultas no banco
-- Gerenciar migrations
-- Abstrair comandos SQL
+### Dotenv
+Carrega variáveis de ambiente a partir do arquivo `.env`.
 
----
+### Cors
+Permite requisições externas ao Backend (Cross-Origin Resource Sharing).
 
-### mysql2
-Driver MySQL utilizado para conexão e execução de consultas no banco de dados.
+### Bcrypt
+Criptografia e comparação de senhas usando hash seguro.
 
----
+### Jsonwebtoken
+Geração e validação de tokens JWT para autenticação.
 
-### dotenv
-Carrega variáveis de ambiente a partir do arquivo `.env`, permitindo proteger dados sensíveis como:
-
-- Senhas
-- Tokens
-- Credenciais de banco
-- Chaves da AWS
-
----
-
-### cors
-Permite configurar acesso da API por aplicações externas (Cross-Origin Resource Sharing), garantindo que o Frontend consiga acessar o Backend mesmo estando em portas diferentes.
-
----
-
-### bcrypt
-Responsável por:
-
-- Criptografar senhas usando hash seguro
-- Comparar senha digitada com hash armazenado
-
-Utilizado para aumentar a segurança da autenticação.
-
----
-
-### jsonwebtoken
-Utilizado para:
-
-- Gerar tokens JWT
-- Validar tokens
-- Implementar autenticação baseada em token
-
-Fluxo:
-
-```text
-Login → Geração de Token → Cliente armazena Token → 
-Requisições protegidas enviam Token → Backend valida Token
-```
-
----
-
-### multer
-Middleware responsável por:
-
-- Upload de arquivos via formulário (`multipart/form-data`)
-- Manipulação temporária de arquivos no servidor
-
----
+### Multer
+Middleware para upload de arquivos (`multipart/form-data`).
 
 ### @aws-sdk/client-s3
-Integração com o serviço **Amazon S3**, permitindo:
-
-- Upload de arquivos para nuvem
-- Gerenciamento de objetos armazenados
-- Armazenamento seguro e escalável
-
-Fluxo de upload:
-
-```text
-Frontend envia arquivo →
-Multer processa →
-Backend envia para Amazon S3 →
-Arquivo armazenado na nuvem →
-URL salva no banco de dados
-```
+Integração com Amazon S3 para armazenamento e gerenciamento de arquivos.
 
 ---
 
-# 🔗 5. Comunicação entre as Camadas
+# 🔗 5. Fluxo de Funcionamento
 
 ```text
 [Usuário]
     ↓
 [Frontend]
-    ↓ HTTP Request (GET | POST | PUT | DELETE)
+    ↓ HTTP Request
 [Express]
     ↓
 [Controller]
@@ -186,6 +125,15 @@ Geração de JWT →
 Token enviado no Header →
 Middleware valida token →
 Acesso autorizado
+```
+
+Para upload:
+
+```text
+Frontend envia arquivo →
+Multer processa →
+Envio para Amazon S3 →
+URL salva no banco
 ```
 
 ---
@@ -209,10 +157,10 @@ Banco relacional MySQL.
 Conceitos aplicados:
 
 - Entidade-Relacionamento
+- Chaves Primárias
+- Chaves Estrangeiras
 - Integridade Referencial
-- Relacionamentos 1:N
-- Normalização
-- Persistência com ORM
+- ORM (Sequelize)
 
 ---
 
@@ -226,9 +174,72 @@ Conceitos aplicados:
 
 ---
 
-# 🚀 9. Guia Completo de Execução
+# 🔐 9. Configuração do Arquivo `.env`
 
-## 9.1 Clonar Repositório
+Criar um arquivo `.env` dentro da pasta **BackEnd** com o seguinte conteúdo:
+
+```env
+DATABASE_NAME="NOMEDATABELA"
+DATABASE_USER="USUARIO"
+DATABASE_PASS="SENHA"
+DATABASE_HOST="localhost"
+
+JWT_SECRET="CHAVESECRETA"
+
+AWS_ACCESS_KEY_ID="ID"
+AWS_SECRET_ACCESS_KEY="CHAVE"
+AWS_REGION="us-east-2"
+AWS_BUCKET_NAME="NOMEDOBUCKET"
+```
+
+---
+
+## 📌 Descrição das Variáveis
+
+### DATABASE_NAME
+Nome do banco de dados criado no MySQL.
+
+### DATABASE_USER
+Usuário do banco de dados.
+
+### DATABASE_PASS
+Senha do banco de dados.
+
+### DATABASE_HOST
+Endereço do servidor MySQL (geralmente `localhost`).
+
+### JWT_SECRET
+Chave secreta utilizada para geração e validação dos tokens JWT.
+
+### AWS_ACCESS_KEY_ID
+Identificador da chave de acesso AWS.
+
+### AWS_SECRET_ACCESS_KEY
+Chave secreta AWS.
+
+### AWS_REGION
+Região do bucket S3 (exemplo: `us-east-2`).
+
+### AWS_BUCKET_NAME
+Nome do bucket criado na Amazon S3.
+
+---
+
+## ⚠️ Segurança
+
+O arquivo `.env` **não deve ser enviado ao GitHub**.
+
+Adicionar no `.gitignore`:
+
+```text
+.env
+```
+
+---
+
+# 🚀 10. Como Executar o Projeto
+
+## 1️⃣ Clonar repositório
 
 ```bash
 git clone <URL_DO_REPOSITORIO>
@@ -236,7 +247,7 @@ git clone <URL_DO_REPOSITORIO>
 
 ---
 
-## 9.2 Criar Banco
+## 2️⃣ Criar banco
 
 ```sql
 CREATE DATABASE gerenciador_eventos;
@@ -244,26 +255,7 @@ CREATE DATABASE gerenciador_eventos;
 
 ---
 
-## 9.3 Configurar `.env`
-
-```env
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=sua_senha
-DB_NAME=gerenciador_eventos
-PORT=3000
-
-JWT_SECRET=sua_chave_secreta
-
-AWS_ACCESS_KEY_ID=sua_access_key
-AWS_SECRET_ACCESS_KEY=sua_secret_key
-AWS_REGION=sua_regiao
-AWS_BUCKET_NAME=nome_do_bucket
-```
-
----
-
-## 9.4 Instalar Dependências
+## 3️⃣ Instalar dependências
 
 ```bash
 cd gerenciador-eventos-BackEnd
@@ -272,13 +264,13 @@ npm install
 
 ---
 
-## 9.5 Iniciar Servidor
+## 4️⃣ Iniciar servidor
 
 ```bash
 npm start
 ```
 
-Servidor:
+Servidor disponível em:
 
 ```text
 http://localhost:3000
@@ -286,22 +278,34 @@ http://localhost:3000
 
 ---
 
-# 🧠 10. Conceitos Técnicos Aplicados
+## 5️⃣ Executar Frontend
+
+Abrir:
+
+```text
+index.html
+```
+
+Ou utilizar Live Server.
+
+---
+
+# 🧠 11. Conceitos Técnicos Aplicados
 
 - API REST
 - JWT Authentication
 - Upload de arquivos
-- Integração com Cloud (Amazon S3)
-- ORM
-- Hash de senha
+- Integração com Amazon S3
+- Hash de senha (bcrypt)
 - Middleware
+- ORM
 - Arquitetura MVC
 - Variáveis de ambiente
 - Separação de responsabilidades
 
 ---
 
-# 📚 11. Informações Acadêmicas
+# 📚 12. Informações Acadêmicas
 
 **Instituição:** Instituto Federal do Piauí – IFPI  
 **Curso:** Análise e Desenvolvimento de Sistemas – ADS  
@@ -309,16 +313,16 @@ http://localhost:3000
 
 ---
 
-# 👥 12. Autores
+# 👥 13. Autores
 
-- Autor 1: Antonio Hittalo Ramyres P. R. Macedo
-- Autor 2: Bento Kauê de Sousa Lima
-- Autor 3: João Manuel da Silva Paulo
-- Autor 4: José Nillo Marques Martins
+- **Antonio Hittalo Ramyres P. R. Macedo**
+- **Bento Kauê de Sousa Lima**
+- **João Manuel da Silva Paulo**
+- **José Nillo Marques Martins**
 
 ---
 
-# 📈 13. Melhorias Futuras
+# 📈 14. Melhorias Futuras
 
 - Deploy em produção
 - Docker
@@ -329,6 +333,6 @@ http://localhost:3000
 
 ---
 
-# 📄 14. Licença
+# 📄 15. Licença
 
 Projeto desenvolvido exclusivamente para fins acadêmicos.
